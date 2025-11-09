@@ -26,11 +26,34 @@ async function run() {
     await client.connect();
 
     const db =client.db("home_nest");
-    const propertiesCollection =db.collection('properties')
+    const propertiesCollection =db.collection('properties');
+    const addPropertiesCollection =db.collection('addProperties');
+    const userCollection =db.collection('user')
 
+    // user
+    app.post('/users', async(req,res)=>{
+      const newUsers  =req.body;
+      const email =req.body.email;
+      const query ={email:email}
+      const existingUser =await userCollection.findOne(query)
+      if(existingUser){
+        res.send({message:'user already exit'})
+      }
+      else{
 
+        const result =await userCollection.insertOne(newUsers)
+        res.send(result)
+      }
+    })
+    // properties
     app.get('/properties', async(req, res)=>{
-        const cursor =propertiesCollection.find();
+      console.log(req.query)
+      const email =req.query.email;
+      const query  ={};
+      if(email){
+        query["posted_by.email"]=email
+      }
+        const cursor =propertiesCollection.find(query);
         const result  =await cursor.toArray();
         res.send(result)
     })
@@ -65,6 +88,37 @@ async function run() {
         const query ={_id: new ObjectId(id)}
         const result =await propertiesCollection.deleteOne(query)
         res.send(result)
+    })
+
+
+    // add properties related
+    app.get('/addProperties',async(req,res)=>{
+      const email =req.query.email;
+      const query ={}
+      if(email){
+        query["posted_by.email"]=email
+      }
+      const cursor  =addPropertiesCollection.find(query)
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    app.post('/addProperties' ,async(req,res)=>{
+      const newAddProperties =req.body;
+      const result= await addPropertiesCollection.insertOne(newAddProperties)
+      res.send(result)
+    })
+    app.get('/addProperties/:id' ,async(req,res)=>{
+      const id =req.params.id;
+      const query ={_id: new ObjectId(id)}
+      const result =await addPropertiesCollection.findOne(query)
+      res.send(result)
+    })
+    app.delete('/addProperties/:id' ,async (req, res)=>{
+      const id =req.params.id;
+      const query ={_id : new ObjectId(id)}
+      const result =await addPropertiesCollection.deleteOne(query)
+      res.send(result)
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
