@@ -101,7 +101,7 @@ async function run() {
       const email =req.query.email;
       const query ={}
       if(email){
-        query["posted_by.email"]=email
+        query["posted_by.email"]=email;
       }
       const cursor  =addPropertiesCollection.find(query)
       const result = await cursor.toArray()
