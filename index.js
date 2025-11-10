@@ -46,18 +46,23 @@ async function run() {
       }
     })
     // properties
+    
     app.get('/properties', async(req, res)=>{
       console.log(req.query)
       const email =req.query.email;
       const query  ={};
       if(email){
-        query["posted_by.email"]=email
+        query["posted_by.email"]=email;
       }
         const cursor =propertiesCollection.find(query);
         const result  =await cursor.toArray();
         res.send(result)
     })
-
+    app.get('/latest-properties', async(req,res)=>{
+      const cursor =propertiesCollection.find().sort({posted_date:-1}).limit(6)
+      const result = await cursor.toArray();
+      res.send(result)
+    })
     app.get('/properties/:id', async(req,res)=>{
         const id =req.params.id;
         const query ={_id :new ObjectId(id)}
