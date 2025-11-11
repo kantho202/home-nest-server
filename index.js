@@ -127,6 +127,7 @@ async function run() {
         const query={_id : new ObjectId(id)}
         const update ={
           $set:{
+            
             name:updateProperties.name,
             property_name:updateProperties.property_name,
             email:updateProperties.email,
