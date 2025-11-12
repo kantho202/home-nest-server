@@ -54,10 +54,18 @@ async function run() {
       if (email) {
         query["posted_by.email"] = email;
       }
-      const cursor = propertiesCollection.find(query);
+      const cursor = propertiesCollection.find(query).sort({ posted_date: 1 });
       const result = await cursor.toArray();
       res.send(result)
     })
+
+    app.get('/search', async (req, res) => {
+      const search_text = req.query.search;
+      const result = await propertiesCollection.find({ property_name: { $regex: search_text, $options: "i" } }).toArray()
+      console.log(result)
+      res.send(result)
+    })
+
     app.get('/latest-properties', async (req, res) => {
       const cursor = propertiesCollection.find().sort({ posted_date: -1 }).limit(6)
       const result = await cursor.toArray();
@@ -116,43 +124,43 @@ async function run() {
         query.email = email
       }
 
-      const cursor = addPropertiesCollection.find(query).sort({property_price:-1})
+      const cursor = addPropertiesCollection.find(query).sort({ property_price: -1 })
       const result = await cursor.toArray()
       res.send(result)
     })
 
-    app.get('/myProperties/:id',async (req,res)=>{
-      const id =req.params.id;
-      const query ={_id : new ObjectId(id)};
-      const result =await addPropertiesCollection.findOne(query);
+    app.get('/myProperties/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await addPropertiesCollection.findOne(query);
       res.send(result)
     })
-    app.patch('/myProperties/:id',  async(req,res)=>{
-        const id =req.params.id;
-        const updateProperties=req.body;
-        console.log('to updated',id,updateProperties)
-        const query={_id : new ObjectId(id)}
-        const update ={
-          $set:{
-            
-            name:updateProperties.name,
-            property_name:updateProperties.property_name,
-            email:updateProperties.email,
-            category:updateProperties.category,
-            price:updateProperties.property_price,
-            location:updateProperties.location,
-            description:updateProperties.description,
+    app.patch('/myProperties/:id', async (req, res) => {
+      const id = req.params.id;
+      const updateProperties = req.body;
+      console.log('to updated', id, updateProperties)
+      const query = { _id: new ObjectId(id) }
+      const update = {
+        $set: {
 
-          }
+          name: updateProperties.name,
+          property_name: updateProperties.property_name,
+          email: updateProperties.email,
+          category: updateProperties.category,
+          price: updateProperties.property_price,
+          location: updateProperties.location,
+          description: updateProperties.description,
+
         }
-        const option={}
-        const result=await addPropertiesCollection.updateOne(query,update,option)
-        res.send(result)
+      }
+      const option = {}
+      const result = await addPropertiesCollection.updateOne(query, update, option)
+      res.send(result)
     })
-    app.delete('/myProperties/:id', async(req,res)=>{
-      const id=req.params.id;
-      const query ={_id : new ObjectId(id)};
-      const result =await addPropertiesCollection.deleteOne(query);
+    app.delete('/myProperties/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await addPropertiesCollection.deleteOne(query);
       res.send(result);
     })
     app.post('/addProperties', async (req, res) => {
