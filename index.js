@@ -120,6 +120,13 @@ async function run() {
       const result = await cursor.toArray()
       res.send(result)
     })
+
+    app.get('/myProperties/:id',async (req,res)=>{
+      const id =req.params.id;
+      const query ={_id : new ObjectId(id)};
+      const result =await addPropertiesCollection.findOne(query);
+      res.send(result)
+    })
     app.patch('/myProperties/:id',  async(req,res)=>{
         const id =req.params.id;
         const updateProperties=req.body;
@@ -132,7 +139,7 @@ async function run() {
             property_name:updateProperties.property_name,
             email:updateProperties.email,
             category:updateProperties.category,
-            price:updateProperties.price,
+            price:updateProperties.property_price,
             location:updateProperties.location,
             description:updateProperties.description,
 
@@ -140,6 +147,7 @@ async function run() {
         }
         const option={}
         const result=await addPropertiesCollection.updateOne(query,update,option)
+        res.send(result)
     })
     app.delete('/myProperties/:id', async(req,res)=>{
       const id=req.params.id;
