@@ -28,7 +28,7 @@ async function run() {
     const db = client.db("home_nest");
     const propertiesCollection = db.collection('properties');
     const addPropertiesCollection = db.collection('addProperties');
-    const userCollection = db.collection('user')
+    const userCollection = db.collection('user');
 
     // user
     app.post('/users', async (req, res) => {
