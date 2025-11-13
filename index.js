@@ -150,7 +150,7 @@ async function run() {
           price: updateProperties.property_price,
           location: updateProperties.location,
           description: updateProperties.description,
-
+          image:updateProperties.image,
         }
       }
       const option = {}
